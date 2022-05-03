@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 
 public class FiltrarBeanService {
     // fields is an array of field names you wish not to send in your response

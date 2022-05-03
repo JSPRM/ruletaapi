@@ -1,6 +1,7 @@
 package com.ibm.academia.ruletaapi.controller;
 
 import com.ibm.academia.ruletaapi.entities.Ruleta;
+import com.ibm.academia.ruletaapi.models.Id;
 import com.ibm.academia.ruletaapi.services.FiltrarBeanService;
 import com.ibm.academia.ruletaapi.services.RuletaDAO;
 import lombok.extern.slf4j.Slf4j;
@@ -39,11 +40,8 @@ public class RuletaController {
         return new ResponseEntity<>(jacksonValue, HttpStatus.OK);
     }
 
-    @PostMapping("/apertura")
-    public ResponseEntity<MappingJacksonValue> abrirRuleta(@RequestBody Long id_ruleta){
-        Ruleta ruleta = ruletaDAO.abrirRuleta(id_ruleta);
-        String[] omitirCampos = {};
-        MappingJacksonValue jacksonValue = FiltrarBeanService.filterBean(omitirCampos, "ruletaFiltro", ruleta);
-        return new ResponseEntity<>(jacksonValue, HttpStatus.OK);
+    @PutMapping("/apertura")
+    public ResponseEntity<?> abrirRuleta(@RequestBody Id idRuleta){
+        return ruletaDAO.abrirRuleta(idRuleta.getIdRuleta());
     }
 }
