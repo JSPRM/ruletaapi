@@ -1,5 +1,6 @@
 package com.ibm.academia.ruletaapi.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ibm.academia.ruletaapi.enums.ColorElegido;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -49,24 +50,20 @@ public class Apuesta implements Serializable {
     @Column(name = "fecha_modificacion")
     private Date fechaModificacion;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="id_ruleta", referencedColumnName = "id_ruleta", foreignKey = @ForeignKey(name = "FK_RULETA_ID"))
-    private Ruleta ruleta;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name="id_sesion", referencedColumnName = "id_sesion", foreignKey = @ForeignKey(name = "FK_SESION_ID"))
+    @JsonIgnoreProperties({"sesion","ruleta","apuestas"})
     private Sesion sesion;
 
-    public Apuesta(Ruleta ruleta, Float cantidadApostada, ColorElegido colorElegido) {
+    public Apuesta( Float cantidadApostada, ColorElegido colorElegido) {
         this.cantidadApostada = cantidadApostada;
         this.colorElegido = colorElegido;
-        this.ruleta = ruleta;
     }
 
-    public Apuesta(Ruleta ruleta, Float cantidadApostada, Integer numeroElegido) {
+    public Apuesta(Float cantidadApostada, Integer numeroElegido) {
         this.cantidadApostada = cantidadApostada;
         this.numeroElegido = numeroElegido;
-        this.ruleta = ruleta;
     }
 
     @PrePersist

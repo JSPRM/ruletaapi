@@ -22,4 +22,16 @@ public class RuletaServiceImpl extends GenericoServiceImpl<Ruleta, RuletaReposit
         repository.save(ruleta);
         return ruleta;
     }
+
+    @Override
+    public Ruleta cerrarRuleta(Ruleta ruleta) {
+        ruleta.setEstaAbierto(false);
+        return repository.save(ruleta);
+    }
+
+    @Override
+    public Long abrir(Long ruleta) {
+
+        return ruleta;
+    }
 }

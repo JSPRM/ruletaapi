@@ -43,10 +43,10 @@ public class Sesion implements Serializable {
     private Date fechaCierre;
 
     @OneToMany(mappedBy = "sesion", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"sesion"})
+    @JsonIgnoreProperties({"sesion","apuestas","ruleta"})
     private List<Apuesta> apuestas;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name="id_ruleta", referencedColumnName = "id_ruleta", foreignKey = @ForeignKey(name = "FK_RULETA_ID"))
     private Ruleta ruleta;
 

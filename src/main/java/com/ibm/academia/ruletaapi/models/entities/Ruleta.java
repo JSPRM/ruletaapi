@@ -38,12 +38,9 @@ public class Ruleta implements Serializable {
     @Column(name = "fecha_modificacion")
     private Date fechaModificacion;
 
-    @OneToMany(mappedBy = "ruleta", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"ruleta"})
-    private List<Apuesta> apuestas;
 
     @OneToMany(mappedBy = "ruleta", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"ruleta"})
+    @JsonIgnoreProperties({"ruleta","apuestas"})
     private List<Sesion> sesiones;
 
     @Serial
@@ -51,7 +48,10 @@ public class Ruleta implements Serializable {
 
     public Ruleta(Boolean estaAbierto, Date fechaAlta) {
         this.estaAbierto = estaAbierto;
-        this.fechaAlta = fechaAlta;
+    }
+
+    public Ruleta(Long idRuleta) {
+        this.idRuleta = idRuleta;
     }
 
     public Ruleta(Boolean estaAbierto) {

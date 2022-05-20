@@ -1,6 +1,7 @@
 package com.ibm.academia.ruletaapi.exceptions.handler;
 
 import com.ibm.academia.ruletaapi.exceptions.NotFoundException;
+import com.ibm.academia.ruletaapi.exceptions.RuletaCerrada;
 import com.ibm.academia.ruletaapi.exceptions.RuletaNoEncontrada;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,7 +24,15 @@ public class ExceptionsHandler {
 
     @ExceptionHandler(value = NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String,Object> notFoundException(RuletaNoEncontrada ex){
+    public Map<String,Object> notFoundException(NotFoundException ex){
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        return response;
+    }
+
+    @ExceptionHandler(value = RuletaCerrada.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String,Object> ruletaCerrada(RuletaCerrada ex){
         Map<String, Object> response = new HashMap<>();
         response.put("message", ex.getMessage());
         return response;

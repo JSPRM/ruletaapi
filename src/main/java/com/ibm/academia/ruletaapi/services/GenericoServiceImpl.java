@@ -21,7 +21,7 @@ public class GenericoServiceImpl<E, R extends JpaRepository<E, Long>> implements
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public E guardar(E entidad) {
         return repository.save(entidad);
     }
