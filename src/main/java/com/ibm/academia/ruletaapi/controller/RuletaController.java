@@ -1,49 +1,62 @@
 package com.ibm.academia.ruletaapi.controller;
 
-import com.ibm.academia.ruletaapi.entities.Ruleta;
-import com.ibm.academia.ruletaapi.services.FiltrarBeanService;
-import com.ibm.academia.ruletaapi.services.RuletaDAO;
+import com.ibm.academia.ruletaapi.exceptions.NotFoundException;
+import com.ibm.academia.ruletaapi.mapper.RuletaMapper;
+import com.ibm.academia.ruletaapi.models.entities.Apuesta;
+import com.ibm.academia.ruletaapi.models.entities.Ruleta;
+import com.ibm.academia.ruletaapi.models.entities.Sesion;
+import com.ibm.academia.ruletaapi.services.RuletaService;
+import com.ibm.academia.ruletaapi.services.SesionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
 @RequestMapping("api/v1/ruleta")
 public class RuletaController {
-    private final RuletaDAO ruletaDAO;
+    private final RuletaService ruletaService;
+    private final SesionService sesionService;
+
+    private final RuletaMapper ruletaMapper;
 
     @Autowired
-    public RuletaController(RuletaDAO ruletaDAO) {
-        this.ruletaDAO = ruletaDAO;
+    public RuletaController(RuletaService ruletaService, SesionService sesionService, RuletaMapper ruletaMapper) {
+        this.ruletaService = ruletaService;
+        this.sesionService = sesionService;
+        this.ruletaMapper = ruletaMapper;
     }
 
     @GetMapping("/listar")
-    public ResponseEntity<MappingJacksonValue> listarTodasLasRuletas(){
-        List<Ruleta> ruletas = ruletaDAO.listarTodasLasRuletas();
-        String[] omitirCampos = {};
-        MappingJacksonValue jacksonValue = FiltrarBeanService.filterBean(omitirCampos, "ruletaFiltro", ruletas);
-        return new ResponseEntity<>(jacksonValue, HttpStatus.OK);
+    public ResponseEntity<?> listarTodasLasRuletas(){
+        Iterable<Ruleta> ruletas = ruletaService.buscarTodos();
+        return new ResponseEntity<>(ruletas, HttpStatus.OK);
     }
 
-    @PostMapping("/crear")
-    public ResponseEntity<MappingJacksonValue> crearRuleta(){
-        Ruleta ruleta = ruletaDAO.agregarNuevaRuleta();
-        String[] omitirCampos = {"estaAbierto","fechaModificacion"};
-        MappingJacksonValue jacksonValue = FiltrarBeanService.filterBean(omitirCampos, "ruletaFiltro", ruleta);
-        return new ResponseEntity<>(jacksonValue, HttpStatus.OK);
+    @PostMapping("/nueva")
+    public ResponseEntity<?> nuevaRuleta(){
+        Ruleta ruleta = ruletaService.guardar(new Ruleta(false));
+        return new ResponseEntity<>(ruletaMapper.mapRuleta(ruleta), HttpStatus.CREATED);
     }
 
-    @PostMapping("/apertura")
-    public ResponseEntity<MappingJacksonValue> abrirRuleta(@RequestBody Long id_ruleta){
-        Ruleta ruleta = ruletaDAO.abrirRuleta(id_ruleta);
-        String[] omitirCampos = {};
-        MappingJacksonValue jacksonValue = FiltrarBeanService.filterBean(omitirCampos, "ruletaFiltro", ruleta);
-        return new ResponseEntity<>(jacksonValue, HttpStatus.OK);
+    @PutMapping("/apertura")
+    public ResponseEntity<?> abrirRuleta(Long idRuleta){
+        Optional<Ruleta> oRuleta = ruletaService.buscarPorId(idRuleta);
+        if(oRuleta.isEmpty()){
+            throw new NotFoundException(String.format("Ruleta con id %d no existe", idRuleta));
+        }
+
+        Ruleta ruleta = ruletaService.abrirRuleta(oRuleta.get());
+        Sesion sesion = sesionService.guardar(new Sesion(ruleta));
+        return new ResponseEntity<>(oRuleta.get(), HttpStatus.OK);
+    }
+
+    @PostMapping("/apuesta")
+    public ResponseEntity<?> nuevaApuestas(@RequestBody Apuesta apuesta){
+        return null;
     }
 }

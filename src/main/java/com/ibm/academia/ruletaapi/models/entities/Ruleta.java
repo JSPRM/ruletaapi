@@ -1,17 +1,13 @@
-package com.ibm.academia.ruletaapi.entities;
+package com.ibm.academia.ruletaapi.models.entities;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -20,7 +16,6 @@ import static javax.persistence.GenerationType.SEQUENCE;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonFilter("ruletaFiltro")
 @Entity
 @Table(name = "ruletas")
 public class Ruleta implements Serializable {
@@ -43,9 +38,13 @@ public class Ruleta implements Serializable {
     @Column(name = "fecha_modificacion")
     private Date fechaModificacion;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "ruleta")
-    private Set<Apuesta> apuestas = new HashSet<>();
+    @OneToMany(mappedBy = "ruleta", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"ruleta"})
+    private List<Apuesta> apuestas;
+
+    @OneToMany(mappedBy = "ruleta", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"ruleta"})
+    private List<Sesion> sesiones;
 
     @Serial
     private static final long serialVersionUID = -3842543004787094180L;
@@ -54,6 +53,21 @@ public class Ruleta implements Serializable {
         this.estaAbierto = estaAbierto;
         this.fechaAlta = fechaAlta;
     }
+
+    public Ruleta(Boolean estaAbierto) {
+        this.estaAbierto = estaAbierto;
+    }
+
+    @PrePersist
+    public void generarFechaAltaRuleta(){
+        this.fechaAlta = new Date();
+    }
+
+    @PostUpdate
+    public void despuesActualizar(){
+        this.fechaModificacion = new Date();
+    }
+
 
     @Override
     public boolean equals(Object o) {

@@ -1,4 +1,4 @@
-package com.ibm.academia.ruletaapi.entities;
+package com.ibm.academia.ruletaapi.models.entities;
 
 import com.ibm.academia.ruletaapi.enums.ColorElegido;
 import lombok.*;
@@ -50,8 +50,29 @@ public class Apuesta implements Serializable {
     private Date fechaModificacion;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="id_ruleta", referencedColumnName = "id_ruleta")
+    @JoinColumn(name="id_ruleta", referencedColumnName = "id_ruleta", foreignKey = @ForeignKey(name = "FK_RULETA_ID"))
     private Ruleta ruleta;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="id_sesion", referencedColumnName = "id_sesion", foreignKey = @ForeignKey(name = "FK_SESION_ID"))
+    private Sesion sesion;
+
+    public Apuesta(Ruleta ruleta, Float cantidadApostada, ColorElegido colorElegido) {
+        this.cantidadApostada = cantidadApostada;
+        this.colorElegido = colorElegido;
+        this.ruleta = ruleta;
+    }
+
+    public Apuesta(Ruleta ruleta, Float cantidadApostada, Integer numeroElegido) {
+        this.cantidadApostada = cantidadApostada;
+        this.numeroElegido = numeroElegido;
+        this.ruleta = ruleta;
+    }
+
+    @PrePersist
+    public void generarFechaAltaRuleta(){
+        this.fechaAlta = new Date();
+    }
 
     @Serial
     private static final long serialVersionUID = 8273282887262681200L;
